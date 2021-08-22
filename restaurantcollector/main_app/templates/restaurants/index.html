@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Restaurant List</h1>
+
+{% for restaurant in restaurants %}
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">{{ restaurant.name }}</span>
+      <p>Cuisine: {{ restaurant.cuisine }}</p>
+      <p>Description: {{ restaurant.description }}</p>
+      {% if restaurant.stars > 3 %}
+        <p>Rating: {{ restaurant.stars }} Stars</p>
+      {% else %}
+        <p>Rating: Would Not Recommend</p>
+      {% endif %}
+      <p>City: {{restaurant.city}}</p>
+      <p>Country: {{restaurant.country}}</p>
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %}
+

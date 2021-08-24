@@ -17,8 +17,9 @@
           <li><a href="/" class="left brand-logo">&nbsp;&nbsp;Restaurant Collector</a></li>
         </ul>
         <ul class="right">
-          <li><a href="/about">About</a></li>
-          <li><a href="/restaurants">View All My Restaurants</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'restaurants_create' %}">Add a Restaurant</a></li>
+          <li><a href="{% url 'index' %}">View All My Restaurants</a></li>
         </ul>
       </div>
     </nav>

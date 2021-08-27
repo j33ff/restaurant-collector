@@ -2,23 +2,120 @@
 {% block content %}
 
 <h1>Restaurant Detail</h1>
-<div class="card">
-    <div class="card-content">
-        <span class="card-title">{{ restaurant.name }}</span>
-        <p>Cuisine: {{ restaurant.cuisine }}</p>
-        <p>Description: {{ restaurant.description }}</p>
-        {% if restaurant.stars > 3 %}
-         <p>Rating: {{ restaurant.stars }} Stars</p>
-        {% else %}
-        <p>Rating: Would Not Recommend</p>
-        {% endif %}
-        <p>City: {{restaurant.city}}</p>
-        <p>Country: {{restaurant.country}}</p>
+<div class="row">
+    <div class="col s6">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">{{ restaurant.name }}</span>
+                <p>Cuisine: {{ restaurant.cuisine }}</p>
+                <p>Description: {{ restaurant.description }}</p>
+                {% if restaurant.stars > 2 %}
+                <p>Rating: {{ restaurant.stars }} Stars</p>
+                {% else %}
+                <p>Rating: Would Not Recommend</p>
+                {% endif %}
+                <p>City: {{restaurant.city}}</p>
+                <p>Country: {{restaurant.country}}</p>
+            </div>
+        <div class="card-action">
+            <a href="{% url 'restaurants_update' restaurant.id %}">Edit</a>
+            <a href="{% url 'restaurants_delete' restaurant.id %}">Delete</a>
+        </div>
+        </div>
     </div>
-    <div class="card-action">
-        <a href="{% url 'restaurants_update' restaurant.id %}">Edit</a>
-        <a href="{% url 'restaurants_delete' restaurant.id %}">Delete</a>
+    
+    <div class="col s6">
+      
+      <form action="{% url 'add_reservation' restaurant.id %}" method="post">
+        {% csrf_token %}
+        {{ reservation_form.as_p }}
+        <input type="submit" class="btn" value="Add Reservation">
+      </form>
+
+        <table class="striped">
+          <thead>
+            <tr><th>Date</th><th>Time</th><th>Seating</th></tr>
+          </thead>
+          <tbody>
+            {% for reservation in restaurant.reservation_set.all %}
+              <tr>
+                <td>{{reservation.date}}</td>
+                <td>{{reservation.time}}</td>
+                <td>{{reservation.get_seating_display}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
     </div>
 </div>
+
+<hr>
+<div class="row">
+  <div class="col s6">
+    <h3>{{ restaurant.name }}'s Dishes</h3>
+    {% if restaurant.dishes.count %}
+      {% for dish in restaurant.dishes.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              {{ dish.name }}  
+            </span>
+            {{ dish.description }}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No Dishes :(</h5>
+    {% endif %}
+  </div>
+  <!-- Available dishes will come after this line -->
+  <div class="col s6">
+    <h3>Available Dishes</h3>
+    {% if dishes.count %}
+      {% for dish in dishes.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              {{ dish.name }}
+            </span>
+            {{ dish.description }}
+          </div>
+          <div class="card-action">
+            <form action="{% url 'assoc_dish' restaurant.id dish.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>{{restaurant.name}} Already Has All Dishes Available</h5>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  var dateEl = document.getElementById('id_date');
+  M.Datepicker.init(dateEl, {
+    format: 'yyyy-mm-dd',
+    defaultDate: new Date(),
+    setDefaultDate: true,
+    autoClose: true
+  });
+
+  var selectEl = document.getElementById('id_seating');
+  M.FormSelect.init(selectEl);
+
+  var timeEl = document.getElementById('id_time');
+  M.Timepicker.init(timeEl, {
+    default: 'now',
+    twelvehour: false, // change to 12 hour AM/PM clock from 24 hour
+    donetext: 'OK',
+    autoclose: false,
+    vibrate: true
+  });
+    
+
+</script>
 
 {% endblock %}

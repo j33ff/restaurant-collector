@@ -29,7 +29,7 @@
       <form action="{% url 'add_reservation' restaurant.id %}" method="post">
         {% csrf_token %}
         {{ reservation_form.as_p }}
-        <input type="submit" class="btn" value="Add Reservation">
+        <input type="submit" id="reservation-btn" class="btn" value="Add Reservation">
       </form>
 
         <table class="striped">
@@ -42,6 +42,12 @@
                 <td>{{reservation.date}}</td>
                 <td>{{reservation.time}}</td>
                 <td>{{reservation.get_seating_display}}</td>
+                <td>
+                  <form method='POST' action="{% url 'delete_reservation' restaurant.id reservation.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class='btn'>Delete</button>
+                  </form>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
@@ -112,9 +118,27 @@
     twelvehour: false, // change to 12 hour AM/PM clock from 24 hour
     donetext: 'OK',
     autoclose: false,
-    vibrate: true
-  });
     
+  });
+
+  let reservationBtn = document.getElementById('reservation-btn');
+
+  reservationBtn.addEventListener('click', function() {
+    let time = timeEl.value;
+    let hours = parseInt(time.slice(0, time.indexOf(':')));
+    if (time.endsWith("AM")){
+        if (hours === 12){
+            hours = 0;
+        }
+    } else {
+        if (hours < 12){
+            hours += 12;
+        }
+    }
+    let minutes = time.slice(time.indexOf(':'), time.indexOf(' '));
+    let clock = `${hours}${minutes}`
+    timeEl.value = clock;
+})  
 
 </script>
 

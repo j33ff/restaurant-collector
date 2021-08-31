@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
-from .models import Restaurant, Dish
+from .models import Reservation, Restaurant, Dish
 from .forms import ReservationForm
-# import datetime
+from datetime import date, time, datetime
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -57,16 +57,21 @@ def assoc_dish(request, restaurant_id, dish_id):
   Restaurant.objects.get(id=restaurant_id).dishes.add(dish_id)
   return redirect('detail', restaurant_id=restaurant_id)
 
+
+#   print(request.POST['time'])
+#   time = request.POST['time']
+#   hours = int(time.slice(0, time.index(':')))
+  
+#   reservation_object = {
+#     'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'],
+#     'date': date.fromisoformat(request.POST['date']), 
+#     'time': datetime.strptime(format_time, '%H:%M'),
+#     'seating': request.POST['seating']
+#   }
+#   print("This is ", reservation_object)
+  
 @login_required
 def add_reservation(request, restaurant_id):
-  # print(request.POST['time'])
-  # reservation_object = {
-  #   'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken'], 
-  #   'time': datetime.time.strptime(request.POST['time'], '%H:%M'),
-  #   'seating': request.POST['seating']
-  # }
-  #  datetime.time
-
   form = ReservationForm(request.POST)
   try:
     if form.is_valid():
@@ -77,6 +82,11 @@ def add_reservation(request, restaurant_id):
     return redirect('detail', restaurant_id=restaurant_id)
   except:
     print("form not valid")
+
+@login_required
+def delete_reservation(request, restaurant_id, reservation_id):
+    Reservation.objects.filter(id=reservation_id).delete()
+    return redirect('detail', restaurant_id=restaurant_id)
 
 class RestaurantCreate(LoginRequiredMixin, CreateView):
   model = Restaurant
